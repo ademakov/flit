@@ -21,6 +21,26 @@ int flit64dec(uint64_t* v, void* buf) {
 		return 9;
 	}
 
+#if 0
+	int size = tzc + 1;
+
+	int trim = (8 - size) * 8;
+	x <<= trim;
+	x >>= trim;
+	x >>= size;
+	*v = x;
+
+	return size;
+#elif 0
+	// const here seems to ensure that 'size' is not aliased by '*v'
+	const int size = tzc + 1;
+
+	x >>= size;
+	x &= ((1ull << (size * 7)) - 1);
+	*v = x;
+
+	return size;
+#else
 	static const uint64_t mask[8] = {
 		0xff,
 		0xffff,
@@ -39,6 +59,7 @@ int flit64dec(uint64_t* v, void* buf) {
 	*v = x >> size;
 
 	return size;
+#endif
 }
 
 // Encodes v into buf and returns the serial octet size.
